@@ -19,6 +19,11 @@ import com.musicg.wave.Wave;
 import java.io.File;
 import java.io.IOException;
 
+/*
+* This is a demo of the core functionality. I will take the recorded chord from folder 'recordings' and compare it
+* with a recorded file in the 'chords' folder
+* */
+
 public class ChordRecognitionDemo {
 
     public static void main(String[] args) {

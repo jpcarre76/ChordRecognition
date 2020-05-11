@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Audio Recorder successfully", Toast.LENGTH_LONG).show();
 
                 myChordRecognition = new ChordRecognition();
-                myChordRecognition.setRecordedAudio(outputFile);
+                //myChordRecognition.setRecordedAudio(outputFile);
             }
         });
 

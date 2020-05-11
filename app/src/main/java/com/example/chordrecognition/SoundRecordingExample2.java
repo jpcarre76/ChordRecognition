@@ -8,7 +8,9 @@ import java.io.IOException;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -31,6 +33,7 @@ public class SoundRecordingExample2 extends Activity {
     private int bufferSize = 0;
     private Thread recordingThread = null;
     private boolean isRecording = false;
+    private static Context sContext;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,10 +42,17 @@ public class SoundRecordingExample2 extends Activity {
 
         setButtonHandlers();
         enableButtons(false);
+        sContext=   getApplicationContext();
+        AssetManager assets = getAssets();
 
         bufferSize = AudioRecord.getMinBufferSize(8000,
                 AudioFormat.CHANNEL_CONFIGURATION_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
+
+    }
+
+    public static Context getContext() {
+        return sContext;
     }
 
     private void setButtonHandlers() {
@@ -60,7 +70,8 @@ public class SoundRecordingExample2 extends Activity {
     }
 
     private String getFilename(){
-        String filepath = Environment.getExternalStorageDirectory().getPath();
+        //String filepath = Environment.getExternalStorageDirectory().getPath();
+        File filepath = this.getContext().getFilesDir();
         File file = new File(filepath,AUDIO_RECORDER_FOLDER);
 
         if(!file.exists()){
@@ -71,7 +82,8 @@ public class SoundRecordingExample2 extends Activity {
     }
 
     private String getTempFilename(){
-        String filepath = Environment.getExternalStorageDirectory().getPath();
+        //String filepath = Environment.getExternalStorageDirectory().getPath();
+        File  filepath = this.getContext().getFilesDir();
         File file = new File(filepath,AUDIO_RECORDER_FOLDER);
 
         if(!file.exists()){
@@ -176,7 +188,7 @@ public class SoundRecordingExample2 extends Activity {
         deleteTempFile();
 
         ChordRecognition myChordRecognition = new ChordRecognition();
-        myChordRecognition.setRecordedAudio(filename);
+        myChordRecognition.setRecordedAudio(filename,sContext);
         myChordRecognition.getChord();
 
     }

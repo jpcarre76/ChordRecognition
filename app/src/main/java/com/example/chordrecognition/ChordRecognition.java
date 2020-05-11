@@ -14,53 +14,62 @@
  * limitations under the License.
  */
 package com.example.chordrecognition;
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Environment;
 
 import com.musicg.fingerprint.FingerprintSimilarity;
 import com.musicg.wave.Wave;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class ChordRecognition {
 
   String recordedAudio;
+  Context context ;
 
-  public void setRecordedAudio(String filename){
+  public void setRecordedAudio(String filename, Context sContext){
       this.recordedAudio = filename;
+      this.context = sContext;
   }
 
-  public String getChord(){
+  public String getChord() {
 
-      String myDirectoryPath = "/storage/emulated/0/ChordRecognition/chords/";
+      String myDirectoryPath = "chords";
       String recordedClip = recordedAudio;
       Wave waveRec = new Wave(recordedClip);
-      float maxSimilarity = -100 ;
-      String maxSimilartyFileName = "" ;
+      float maxSimilarity = -100;
+      String maxSimilartyFileName = "";
 
-      File dir = new File(myDirectoryPath);
-      File[] directoryListing = dir.listFiles();
-      if (directoryListing != null) {
-          for (File child : directoryListing) {
+      String[] list;
+      try {
+          list = context.getAssets().list(myDirectoryPath);
+          for (String child : list) {
               // Do something with child
-              Wave chord = new Wave(myDirectoryPath+child.getName());
+              InputStream oFile = context.getAssets().open(myDirectoryPath+"/"+child);
+              Wave chord = new Wave(oFile);
               FingerprintSimilarity similarity;
               similarity = chord.getFingerprintSimilarity(waveRec);
-              System.out.println("similarity is " + similarity.getSimilarity() );
+              System.out.println("similarity is " + similarity.getSimilarity());
               if (similarity.getSimilarity() > maxSimilarity) {
-                  maxSimilarity = similarity.getSimilarity() ;
-                  maxSimilartyFileName = child.getName();
+                  maxSimilarity = similarity.getSimilarity();
+                  maxSimilartyFileName = child;
               }
           }
-      } else {
-          // Handle the case where dir is not really a directory.
-          // Checking dir.isDirectory() above would not be sufficient
-          // to avoid race conditions with another process that deletes
-          // directories.
+
+          System.out.println("Chord is " + maxSimilartyFileName);
+
+
+      } catch (IOException e1) {
+          // TODO Auto-generated catch block
+          e1.printStackTrace();
       }
 
-      System.out.println("Chord is " + maxSimilartyFileName );
       return maxSimilartyFileName;
 
   }
-
 }
