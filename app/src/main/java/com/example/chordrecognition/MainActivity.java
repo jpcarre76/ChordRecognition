@@ -8,9 +8,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.io.File;
 import java.io.IOException;
 
 
@@ -19,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private MediaRecorder myAudioRecorder;
     private String outputFile;
     ChordRecognition myChordRecognition ;
+    private static final String TAG = "Main Activity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +85,14 @@ public class MainActivity extends AppCompatActivity {
                 play.setEnabled(true);
                 Toast.makeText(getApplicationContext(), "Audio Recorder successfully", Toast.LENGTH_LONG).show();
 
+                File file = new File(outputFile);
+                int file_size = Integer.parseInt(String.valueOf(file.length()/1024));
+                Log.i(TAG,"Audio recorded to file:"+ outputFile);
+                Log.i(TAG,"Filesize:"+ file_size);
+
                 myChordRecognition = new ChordRecognition();
-                //myChordRecognition.setRecordedAudio(outputFile);
+                myChordRecognition.setRecordedAudio(outputFile,getApplicationContext());
+                myChordRecognition.getChord();
             }
         });
 
@@ -96,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     mediaPlayer.start();
                     Toast.makeText(getApplicationContext(), "Playing Audio", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
-                    // make something
+                    Log.e(TAG,"Error playing file");
                 }
             }
         });

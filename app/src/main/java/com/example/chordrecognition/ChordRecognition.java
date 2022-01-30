@@ -17,6 +17,7 @@ package com.example.chordrecognition;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.Environment;
+import android.widget.Toast;
 
 import com.musicg.fingerprint.FingerprintSimilarity;
 import com.musicg.wave.Wave;
@@ -60,7 +61,7 @@ public class ChordRecognition {
                   maxSimilartyFileName = child;
               }
           }
-
+          Toast.makeText(context, "Chord is", Toast.LENGTH_LONG).show();
           System.out.println("Chord is " + maxSimilartyFileName);
 
 
