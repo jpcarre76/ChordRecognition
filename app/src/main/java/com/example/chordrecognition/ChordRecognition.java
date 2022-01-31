@@ -43,8 +43,12 @@ public class ChordRecognition {
   public String getChord() {
 
       String myDirectoryPath = "chords";
+      Wave waveRec = null  ;
       String recordedClip = recordedAudio;
-      Wave waveRec = new Wave(recordedClip);
+      File recordedFile = new File(recordedAudio);
+      if(recordedFile.exists())
+       waveRec = new Wave(recordedClip);
+
       float maxSimilarity = -100;
       String maxSimilartyFileName = "";
 
@@ -57,7 +61,7 @@ public class ChordRecognition {
               Wave chord = new Wave(oFile);
               FingerprintSimilarity similarity;
               similarity = chord.getFingerprintSimilarity(waveRec);
-              System.out.println("similarity is " + similarity.getSimilarity());
+              Log.i(TAG,"Similarity is " + similarity.getSimilarity());
               if (similarity.getSimilarity() > maxSimilarity) {
                   maxSimilarity = similarity.getSimilarity();
                   maxSimilartyFileName = child;

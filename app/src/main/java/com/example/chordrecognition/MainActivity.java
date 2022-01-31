@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                 int file_size = Integer.parseInt(String.valueOf(file.length()/1024));
                 Log.i(TAG,"Audio recorded to file:"+ outputFile);
                 Log.i(TAG,"Filesize:"+ file_size);
-
                 myChordRecognition = new ChordRecognition();
                 myChordRecognition.setRecordedAudio(outputFile,getApplicationContext());
                 myChordRecognition.getChord();

@@ -15,8 +15,8 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -27,13 +27,15 @@ public class SoundRecordingExample2 extends Activity {
     private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
     private static final int RECORDER_SAMPLERATE = 44100;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_STEREO;
-    private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+    private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_8BIT;
+    private static final String TAG = "AudioRecorder" ;
 
     private AudioRecord recorder = null;
     private int bufferSize = 0;
     private Thread recordingThread = null;
     private boolean isRecording = false;
     private static Context sContext;
+    private String tempFileName ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +49,7 @@ public class SoundRecordingExample2 extends Activity {
 
         bufferSize = AudioRecord.getMinBufferSize(8000,
                 AudioFormat.CHANNEL_CONFIGURATION_MONO,
-                AudioFormat.ENCODING_PCM_16BIT);
+                AudioFormat.ENCODING_PCM_8BIT);
 
     }
 
@@ -81,7 +83,7 @@ public class SoundRecordingExample2 extends Activity {
         return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + AUDIO_RECORDER_FILE_EXT_WAV);
     }
 
-    private String getTempFilename(){
+    private String createTempFilename(){
         //String filepath = Environment.getExternalStorageDirectory().getPath();
         File  filepath = this.getContext().getFilesDir();
         File file = new File(filepath,AUDIO_RECORDER_FOLDER);
@@ -99,8 +101,12 @@ public class SoundRecordingExample2 extends Activity {
     }
 
     private void startRecording(){
-        recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,
-                RECORDER_SAMPLERATE, RECORDER_CHANNELS,RECORDER_AUDIO_ENCODING, bufferSize);
+        recorder = new AudioRecord(
+                MediaRecorder.AudioSource.MIC,
+                RECORDER_SAMPLERATE,
+                RECORDER_CHANNELS,
+                RECORDER_AUDIO_ENCODING,
+                bufferSize);
 
         int i = recorder.getState();
         if(i==1) {
@@ -136,11 +142,12 @@ public class SoundRecordingExample2 extends Activity {
 
     private void writeAudioDataToFile(){
         byte data[] = new byte[bufferSize];
-        String filename = getTempFilename();
+        String filename = createTempFilename();
         FileOutputStream os = null;
 
         try {
             os = new FileOutputStream(filename);
+            setTempFileName(filename);
         } catch (FileNotFoundException e) {
 // TODO Auto-generated catch block
             e.printStackTrace();
@@ -169,9 +176,21 @@ public class SoundRecordingExample2 extends Activity {
         }
     }
 
+    private void setTempFileName(String fileName ){
+        this.tempFileName = fileName ;
+    }
+
+    private String getTempFileName( ){
+       return  this.tempFileName ;
+    }
+
+    private void startPlaying() {
+            }
+
+
     private void stopRecording(){
         String filename ;
-        filename = getFilename();
+        filename = getTempFileName();
         if(null != recorder){
             isRecording = false;
 
@@ -182,10 +201,15 @@ public class SoundRecordingExample2 extends Activity {
 
             recorder = null;
             recordingThread = null;
+            Log.i(TAG,"Filename is:"+filename);
+            File file = new File(filename);
+            int file_size = Integer.parseInt(String.valueOf(file.length()/1024));
+            Log.i(TAG,"Filesize is:"+file_size);
+
         }
 
-        copyWaveFile(getTempFilename(),filename);
-        deleteTempFile();
+        //copyWaveFile(filename,getTempFilename());
+        //deleteTempFile();
 
         ChordRecognition myChordRecognition = new ChordRecognition();
         myChordRecognition.setRecordedAudio(filename,sContext);
@@ -194,8 +218,7 @@ public class SoundRecordingExample2 extends Activity {
     }
 
     private void deleteTempFile() {
-        File file = new File(getTempFilename());
-
+        File file = new File(getFilename());
         file.delete();
     }
 
@@ -216,7 +239,7 @@ public class SoundRecordingExample2 extends Activity {
             totalAudioLen = in.getChannel().size();
             totalDataLen = totalAudioLen + 36;
 
-            AppLog.logString("File size: " + totalDataLen);
+            Log.i(TAG,"File size: " + totalDataLen);
 
             WriteWaveFileHeader(out, totalAudioLen, totalDataLen,
                     longSampleRate, channels, byteRate);
@@ -295,20 +318,24 @@ public class SoundRecordingExample2 extends Activity {
             switch(v.getId()){
                 case R.id.record:{
                     AppLog.logString("Start Recording");
-
                     enableButtons(true);
                     startRecording();
-
                     break;
                 }
                 case R.id.stop:{
                     AppLog.logString("Start Recording");
-
                     enableButtons(false);
                     stopRecording();
-
                     break;
                 }
+
+                case R.id.play:{
+                    AppLog.logString("Start Playing");
+                    enableButtons(false);
+                    startPlaying();
+                    break;
+                }
+
             }
         }
     };
