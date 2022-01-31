@@ -17,6 +17,7 @@ package com.example.chordrecognition;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.musicg.fingerprint.FingerprintSimilarity;
@@ -32,6 +33,7 @@ public class ChordRecognition {
 
   String recordedAudio;
   Context context ;
+  private static final String TAG = "ChordRecognition";
 
   public void setRecordedAudio(String filename, Context sContext){
       this.recordedAudio = filename;
@@ -62,7 +64,8 @@ public class ChordRecognition {
               }
           }
           Toast.makeText(context, "Chord is", Toast.LENGTH_LONG).show();
-          System.out.println("Chord is " + maxSimilartyFileName);
+          Log.i(TAG,"Chord is " + maxSimilartyFileName);
+          Log.i(TAG,"Similarity is " + maxSimilarity);
 
 
       } catch (IOException e1) {

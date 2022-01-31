@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-
+        //Record button listener
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,11 +74,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Stop button listener
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 myAudioRecorder.stop();
-                myAudioRecorder.release();
+                //myAudioRecorder.release();
                 myAudioRecorder = null;
                 record.setEnabled(true);
                 stop.setEnabled(false);
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Play button listener
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
