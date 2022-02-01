@@ -19,16 +19,16 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
         />
+
     <Button
+        android:id="@+id/stop"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stop"
-        android:textSize="20sp"
-        android:id="@+id/stop"
         android:layout_below="@id/record"
-        android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
-        />
+        android:layout_marginTop="10dp"
+        android:text="Stop"
+        android:textSize="20sp" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,7 +1,10 @@
 package com.example.chordrecognition;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -23,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private String outputFile;
     ChordRecognition myChordRecognition ;
     private static final String TAG = "Main Activity";
+    Context context ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         record = (Button) findViewById(R.id.record);
         stop.setEnabled(false);
         play.setEnabled(false);
+        context = this;
 
         outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
         outputFile = Environment.getExternalStorageDirectory() + "/recording.3gp";
@@ -79,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myAudioRecorder.stop();
-                //myAudioRecorder.release();
+                myAudioRecorder.release();
                 myAudioRecorder = null;
                 record.setEnabled(true);
                 stop.setEnabled(false);
@@ -102,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 MediaPlayer mediaPlayer = new MediaPlayer();
                 try {
+                    //mediaPlayer = MediaPlayer.create(context, R.raw.bm);
                     mediaPlayer.setDataSource(outputFile);
                     mediaPlayer.prepare();
                     mediaPlayer.start();

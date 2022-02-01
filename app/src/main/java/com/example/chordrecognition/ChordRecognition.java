@@ -61,7 +61,8 @@ public class ChordRecognition {
               Wave chord = new Wave(oFile);
               FingerprintSimilarity similarity;
               similarity = chord.getFingerprintSimilarity(waveRec);
-              Log.i(TAG,"Similarity is " + similarity.getSimilarity());
+              Log.i(TAG,"Similarity with " + child + " is " + similarity.getSimilarity());
+
               if (similarity.getSimilarity() > maxSimilarity) {
                   maxSimilarity = similarity.getSimilarity();
                   maxSimilartyFileName = child;
