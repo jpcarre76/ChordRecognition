@@ -3,17 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.chordrecognition.MainActivity">
+    tools:context="com.example.chordrecognition.AudioRecordActivity">
+
     <ImageView
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:id="@+id/logo"/>
+        android:id="@+id/logo"
+        android:layout_width="266dp"
+        android:layout_height="423dp"
+        android:layout_marginTop="20dp" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Record"
+        android:text="Record Chord"
         android:textSize="20sp"
         android:id="@+id/record"
         android:layout_centerHorizontal="true"

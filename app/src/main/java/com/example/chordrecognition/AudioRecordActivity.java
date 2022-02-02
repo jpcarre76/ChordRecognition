@@ -10,7 +10,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
@@ -21,11 +20,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-public class SoundRecordingExample2 extends Activity {
+public class AudioRecordActivity extends Activity {
     private static final int RECORDER_BPP = 8;
     private static final String AUDIO_RECORDER_FILE_EXT_WAV = ".wav";
     private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
-    //private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
     private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.wav";
     private static final int RECORDER_SAMPLERATE = 44100;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
@@ -38,7 +36,7 @@ public class SoundRecordingExample2 extends Activity {
     private boolean isRecording = false;
     private static Context sContext;
     private String tempFileName;
-    private MediaPlayer player;
+    private String outfilename ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,12 +46,10 @@ public class SoundRecordingExample2 extends Activity {
         setButtonHandlers();
         enableButtons(false);
         sContext = getApplicationContext();
-        AssetManager assets = getAssets();
 
         bufferSize = AudioRecord.getMinBufferSize(8000,
-                AudioFormat.CHANNEL_CONFIGURATION_MONO,
+                AudioFormat.CHANNEL_OUT_STEREO,
                 AudioFormat.ENCODING_PCM_8BIT);
-        bufferSize = 8 ;
 
     }
 
@@ -64,6 +60,7 @@ public class SoundRecordingExample2 extends Activity {
     private void setButtonHandlers() {
         ((Button) findViewById(R.id.record)).setOnClickListener(btnClick);
         ((Button) findViewById(R.id.stop)).setOnClickListener(btnClick);
+        ((Button) findViewById(R.id.play)).setOnClickListener(btnClick);
     }
 
     private void enableButton(int id, boolean isEnable) {
@@ -76,19 +73,17 @@ public class SoundRecordingExample2 extends Activity {
     }
 
     private String getFilename() {
-        //String filepath = Environment.getExternalStorageDirectory().getPath();
         File filepath = getContext().getFilesDir();
+        String fileName ;
         File file = new File(filepath, AUDIO_RECORDER_FOLDER);
-
         if (!file.exists()) {
             file.mkdirs();
         }
-
-        return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + AUDIO_RECORDER_FILE_EXT_WAV);
+        fileName = file.getAbsolutePath() + "/" + System.currentTimeMillis() + AUDIO_RECORDER_FILE_EXT_WAV;
+        return fileName;
     }
 
     private String createTempFilename() {
-        //String filepath = Environment.getExternalStorageDirectory().getPath();
         File filepath = getContext().getFilesDir();
         File file = new File(filepath, AUDIO_RECORDER_FOLDER);
 
@@ -111,6 +106,9 @@ public class SoundRecordingExample2 extends Activity {
                 RECORDER_CHANNELS,
                 RECORDER_AUDIO_ENCODING,
                 bufferSize);
+
+        deleteTempFile(outfilename);
+        deleteTempFile(tempFileName);
 
         int i = recorder.getState();
         if (i == 1) {
@@ -189,9 +187,9 @@ public class SoundRecordingExample2 extends Activity {
     }
 
     private void startPlaying() {
-        player = new MediaPlayer();
+        MediaPlayer player = new MediaPlayer();
         try {
-            player.setDataSource(getTempFileName());
+            player.setDataSource(outfilename);
             player.prepare();
             player.start();
         } catch (IOException e) {
@@ -201,39 +199,37 @@ public class SoundRecordingExample2 extends Activity {
 
 
     private void stopRecording() {
-        String filename;
-        filename = getTempFileName();
         if (null != recorder) {
             isRecording = false;
-
             int i = recorder.getState();
             if (i == 1)
                 recorder.stop();
             recorder.release();
-
             recorder = null;
             recordingThread = null;
-            Log.i(TAG, "Filename is:" + filename);
-            File file = new File(filename);
+            Log.i(TAG, "Filename is:" + tempFileName);
+            File file = new File(tempFileName);
             int file_size = Integer.parseInt(String.valueOf(file.length() / 1024));
             Log.i(TAG, "Filesize is:" + file_size);
-
         }
 
-        String outfilename = getFilename() ;
+         outfilename = getFilename() ;
         //Copy recording to a new wav file with the correct bits per sample
-        copyWaveFile(filename,outfilename);
-        //deleteTempFile();
-
+        copyWaveFile(tempFileName,outfilename);
         ChordRecognition myChordRecognition = new ChordRecognition();
         myChordRecognition.setRecordedAudio(outfilename,sContext);
         myChordRecognition.getChord();
 
+
     }
 
-    private void deleteTempFile() {
-        File file = new File(getFilename());
-        file.delete();
+    private void deleteTempFile(String fileName) {
+       try {
+          File file = new File(fileName);
+          file.delete();
+        }catch (Exception e){
+
+       }
     }
 
     private void copyWaveFile(String inFilename, String outFilename) {
@@ -241,7 +237,6 @@ public class SoundRecordingExample2 extends Activity {
         FileOutputStream out = null;
         long totalAudioLen = 0;
         long totalDataLen = totalAudioLen + 36;
-        long longSampleRate = RECORDER_SAMPLERATE;
         int channels = 2;
         long byteRate = RECORDER_BPP * RECORDER_SAMPLERATE * channels / 8;
 
@@ -256,7 +251,7 @@ public class SoundRecordingExample2 extends Activity {
             Log.i(TAG, "File size: " + totalDataLen);
 
             WriteWaveFileHeader(out, totalAudioLen, totalDataLen,
-                    longSampleRate, channels, byteRate);
+                    RECORDER_SAMPLERATE, channels, byteRate);
 
             while (in.read(data) != -1) {
                 out.write(data);

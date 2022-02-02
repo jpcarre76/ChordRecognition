@@ -68,7 +68,7 @@ public class ChordRecognition {
                   maxSimilartyFileName = child;
               }
           }
-          Toast.makeText(context, "Chord is", Toast.LENGTH_LONG).show();
+          Toast.makeText(context, "Chord is " + maxSimilartyFileName, Toast.LENGTH_LONG).show();
           Log.i(TAG,"Chord is " + maxSimilartyFileName);
           Log.i(TAG,"Similarity is " + maxSimilarity);
 
